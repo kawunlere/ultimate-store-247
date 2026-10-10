@@ -1,5 +1,3 @@
-// ===== Ultimate Store 24/7 =====
-
 const APPS = [
   {name: "Spotify", cat: "apps", price: "Free", size: "35MB", img: "https://via.placeholder.com/150/1DB954/fff?text=Spotify"},
   {name: "TikTok", cat: "apps", price: "Free", size: "85MB", img: "https://via.placeholder.com/150/000/fff?text=TikTok"},
@@ -12,6 +10,8 @@ const APPS = [
   {name: "Mod Menu v1", cat: "mods", price: "Free Key", size: "8MB", img: "https://via.placeholder.com/150/E91E63/fff?text=Mod"},
   {name: "Premium Mod", cat: "mods", price: "Premium", size: "12MB", img: "https://via.placeholder.com/150/673AB7/fff?text=VIP"}
 ];
+
+const API_URL = "https://ultimate-api.kawunlere.workers.dev";
 
 function renderGrid(id, filter) {
   const el = document.getElementById(id);
@@ -41,11 +41,28 @@ function renderTopPicks() {
   `).join('');
 }
 
-function getKey() {
-  alert('Key generator coming soon!\n\nGet your device ID from the mod menu first.');
+async function getKey() {
+  const deviceId = prompt("Enter your Device ID (shown in mod menu):");
+  if (!deviceId) return;
+  if (deviceId.length < 5) { alert("Invalid device ID"); return; }
+  
+  try {
+    const res = await fetch(API_URL + "/api/generate-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deviceId: deviceId, type: "free" })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert("Your Key: " + data.key + "\n\nExpires: " + data.expires + "\n\nCopy this key and paste it in your mod menu.");
+    } else {
+      alert("Error: " + data.message);
+    }
+  } catch (e) {
+    alert("Network error. Make sure you have internet.");
+  }
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
   renderTopPicks();
   renderGrid('appsList', 'apps');
@@ -54,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderGrid('modsList', 'mods');
 });
 
-// Bottom nav highlight
 document.querySelectorAll('.bottom-nav a').forEach(a => {
   a.addEventListener('click', () => {
     document.querySelectorAll('.bottom-nav a').forEach(x => x.classList.remove('active'));
