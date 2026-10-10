@@ -3,47 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Store 24/7 - Dead Target Mod</title>
+<title>Ultimate Store 24/7</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="navbar">
-<div class="logo">🎯 ULTIMATE STORE 24/7</div>
-<div class="menu">
-<a href="#home">Home</a>
-<a href="#products">Mods</a>
+<header class="topbar">
+<a href="/" class="logo">Ultimate Store 24/7</a>
+<input type="text" id="search" placeholder="Search apps, games, tools...">
+</header>
+<nav class="bottom-nav">
+<a href="#home" class="active">Home</a>
+<a href="#apps">Apps</a>
+<a href="#games">Games</a>
 <a href="#tools">Tools</a>
-<a href="#contact">Contact</a>
-</div>
-</div>
-<div class="hero" id="home">
-<h1>Dead Target Mod Menu</h1>
-<p>Premium mods, tools & key generator</p>
-<button class="btn-primary" onclick="getKey()">Get Free Key</button>
-<button class="btn-secondary" onclick="premium()">Premium Plans</button>
-</div>
-<div class="section" id="products">
-<h2>Available Mods</h2>
-<div class="card">
-<h3>Dead Target Mod Menu v3.2</h3>
-<p>✓ Unlimited Gold/Diamond</p>
-<p>✓ All premium guns unlocked</p>
-<p>✓ No reload + infinite bullets</p>
-<p>✓ Aim assist</p>
-<p class="price">$0.00 (Free key available)</p>
-</div>
-</div>
-<div class="section" id="tools">
-<h2>Tools Coming Soon</h2>
-<p>We will add modding tools, scripts, and more.</p>
-</div>
-<div class="section" id="contact">
-<h2>Contact Us</h2>
-<p>📱 WhatsApp: Coming soon</p>
-<p>✈️ Telegram: Coming soon</p>
-<p>📺 YouTube: Coming soon</p>
-</div>
-<footer>© 2026 Ultimate Store 24/7 - All Rights Reserved</footer>
+<a href="#mods">Mods</a>
+</nav>
+<main>
+<section id="home" class="section">
+<h2 class="title">Top Picks</h2>
+<div class="grid" id="topPicks"></div>
+</section>
+<section id="apps" class="section">
+<h2 class="title">Apps</h2>
+<div class="grid" id="appsList"></div>
+</section>
+<section id="games" class="section">
+<h2 class="title">Games</h2>
+<div class="grid" id="gamesList"></div>
+</section>
+<section id="tools" class="section">
+<h2 class="title">Tools</h2>
+<div class="grid" id="toolsList"></div>
+</section>
+<section id="mods" class="section">
+<h2 class="title">Mod APKs</h2>
+<div class="grid" id="modsList"></div>
+</section>
+</main>
+<button class="get-key-fab" onclick="getKey()">Get Free Key</button>
 <script src="js/main.js"></script>
 </body>
 </html>
