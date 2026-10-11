@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8 Ad Steps - Get Free Key</title>
+<meta name="monetag" content="8c65e44f884bece35ed56f60d7323722">
+<script src="https://quge5.com/88/tag.min.js" data-zone="294019" async data-cfasync="false"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; padding: 20px; max-width: 500px; margin: 0 auto; }
+h1 { color: #ff5722; text-align: center; margin-bottom: 20px; }
+.progress { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.progress-bar { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+.progress-fill { background: linear-gradient(90deg, #4caf50, #8bc34a); height: 100%; width: 0%; transition: width 0.3s; }
+.step { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.step.completed { background: #e8f5e9; border: 2px solid #4caf50; }
+.step-num { display: inline-block; width: 30px; height: 30px; line-height: 30px; background: #ff5722; color: #fff; border-radius: 50%; margin-bottom: 10px; }
+.step.completed .step-num { background: #4caf50; }
+.btn { display: inline-block; padding: 12px 25px; background: #ff5722; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+.btn:disabled { background: #ccc; }
+.btn-completed { background: #4caf50; }
+.footer { text-align: center; margin-top: 20px; }
+.footer a { color: #999; text-decoration: none; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>Complete 8 Steps to Get Free Key</h1>
+<div class="progress">
+<div>Progress: <span id="progressText">0/8</span></div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+<div id="stepsContainer"></div>
+<div class="footer"><a href="/">← Back to home</a></div>
+
+<script>
+const AD_LINKS = [
+  "https://uplcm.com/4/11303948",
+  "https://uplcm.com/4/10123298",
+  "https://uplcm.com/4/11303948",
+  "https://uplcm.com/4/10123298",
+  "https://uplcm.com/4/11303948",
+  "https://uplcm.com/4/10123298",
+  "https://uplcm.com/4/11303948",
+  "https://uplcm.com/4/10123298"
+];
+
+const params = new URLSearchParams(window.location.search);
+const deviceId = params.get('device') || '';
+let currentStep = parseInt(localStorage.getItem('adStep') || '0');
+
+const container = document.getElementById('stepsContainer');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+
+function render() {
+  container.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const completed = i < currentStep;
+    const isCurrent = i === currentStep;
+    const div = document.createElement('div');
+    div.className = 'step' + (completed ? ' completed' : '');
+    div.innerHTML = `
+      <div class="step-num">${i + 1}</div>
+      <div>Step ${i + 1}</div>
+      ${completed ? '<div>✓ Completed</div>' : isCurrent ? `<a href="${AD_LINKS[i]}" target="_blank" onclick="completeStep(${i})" class="btn">Open Ad & Continue</a>` : '<div style="color:#999;">Locked</div>'}
+    `;
+    container.appendChild(div);
+  }
+  progressFill.style.width = (currentStep / 8 * 100) + '%';
+  progressText.innerText = currentStep + '/8';
+  if (currentStep >= 8) getKey();
+}
+
+function completeStep(step) {
+  setTimeout(() => {
+    currentStep = step + 1;
+    localStorage.setItem('adStep', currentStep);
+    render();
+  }, 3000);
+}
+
+async function getKey() {
+  if (!deviceId) {
+    container.innerHTML = '<div class="step"><h2>Error</h2><p>No device ID. Open this page from your mod menu.</p></div>';
+    return;
+  }
+  try {
+    const res = await fetch('https://ultimate-api.kawunlere.workers.dev/api/generate-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: deviceId, type: 'free' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      container.innerHTML = `
+        <div class="step completed">
+          <h2 style="color:#4caf50;">🎉 Your Free Key</h2>
+          <div style="font-size:20px;font-weight:bold;color:#ff5722;font-family:monospace;padding:15px;background:#fff;border-radius:5px;word-break:break-all;margin:10px 0;">${data.key}</div>
+          <p>Valid: 2 days</p>
+          <p style="color:#999;font-size:12px;">Copy this key and paste in your mod menu</p>
+        </div>
+      `;
+    } else {
+      container.innerHTML = '<div class="step"><h2>Error</h2><p>' + data.message + '</p></div>';
+    }
+  } catch (e) {
+    container.innerHTML = '<div class="step"><h2>Error</h2><p>Network error</p></div>';
+  }
+}
+
+render();
+</script>
+</body>
+</html>
