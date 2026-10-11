@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Get Your Key - Ultimate Store 24/7</title>
+<meta name="monetag" content="8c65e44f884bece35ed56f60d7323722">
+<script src="https://quge5.com/88/tag.min.js" data-zone="294019" async data-cfasync="false"></script>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,6 +16,10 @@
 <div class="container" style="max-width:500px;margin:40px auto;padding:20px;">
   <h2 style="text-align:center;color:#ff5722;">Get Your Free Key</h2>
   
+  <p style="text-align:center;margin:20px 0;">
+    <a href="8ad.html" style="display:inline-block;background:#ff5722;color:#fff;padding:12px 25px;text-decoration:none;border-radius:5px;font-weight:bold;">Complete 8 Ad Steps to Get Free Key →</a>
+  </p>
+
   <div id="loading" style="text-align:center;color:#999;padding:30px;">
     Reading your device ID...
   </div>
@@ -31,7 +37,6 @@
 <script>
 const API_URL = "https://ultimate-api.kawunlere.workers.dev";
 
-// Read device ID from URL
 const params = new URLSearchParams(window.location.search);
 const deviceId = params.get('device');
 
@@ -40,7 +45,6 @@ if (!deviceId || deviceId.length < 5) {
   document.getElementById('error').style.display = 'block';
   document.getElementById('error').innerText = 'Invalid device ID. Please open this page from your mod menu.';
 } else {
-  // Get key from API
   fetch(API_URL + '/api/generate-key', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
