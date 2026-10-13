@@ -15,10 +15,10 @@
 .btn { display: inline-block; padding: 12px 25px; background: rgba(0,26,13,0.85); color: #00ff41; border: 1px solid #00ff41; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
 .btn:hover { background: #00ff41; color: #000; }
 .btn-free { background: #001a0d; }
-.btn-premium { background: linear-gradient(135deg, #ff5722, #ff9800); color: #fff; border-color: #ff5722; }
-.btn-disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-premium { background: linear-gradient(135deg, #ff5722, #ff9800); color: #fff; border-color: #ff5722; width: 100%; }
 .key-display { font-size: 18px; font-weight: bold; color: #00ff41; padding: 15px; background: #000; border: 1px solid #00ff41; border-radius: 4px; text-align: center; font-family: monospace; text-shadow: 0 0 8px #00ff41; word-break: break-all; margin: 10px 0; }
 .error { color: #f44336; padding: 10px; background: rgba(244,67,54,0.1); border-radius: 4px; }
+input.email-input { width: 100%; padding: 10px; background: #000; color: #00ff41; border: 1px solid #00ff41; border-radius: 4px; font-family: monospace; margin: 8px 0; box-sizing: border-box; }
 </style>
 </head>
 <body>
@@ -34,23 +34,23 @@
 <div style="max-width:500px;margin:30px auto;padding:20px;">
 <h2 style="text-align:center;color:#00ff41;text-shadow:0 0 10px #00ff41;">Get Your Key</h2>
 
-<div id="loading" style="text-align:center;color:#00802b;padding:20px;">Loading your device ID...</div>
+<div id="loading" style="text-align:center;color:#00802b;padding:20px;">Loading...</div>
 <div id="error" class="error" style="display:none;"></div>
 
 <div id="plans" style="display:none;">
 <div class="plan">
 <h3>FREE KEY</h3>
 <div class="price">FREE</div>
-<div class="desc">2 days access. Watch 8 short ads to unlock.</div>
-<a id="freeBtn" class="btn btn-free" href="8ad.html" style="display:block;text-align:center;">Watch 8 Ads & Get Key</a>
+<div class="desc">2 days access. Watch 8 short ads.</div>
+<a id="freeBtn" class="btn btn-free" style="display:block;text-align:center;">Watch 8 Ads & Get Free Key</a>
 </div>
 
 <div class="plan">
 <h3>PREMIUM KEY</h3>
-<div class="price">₦1,000<small style="font-size:12px;">/30 days</small></div>
-<div class="desc">30 days unlimited access. Pay instantly via Paystack.</div>
-<button id="premiumBtn" class="btn btn-premium" style="display:block;width:100%;">Pay with Paystack</button>
-<p style="font-size:11px;color:#888;margin-top:8px;">Paystack secures your payment. Key auto-generated on success.</p>
+<input type="email" id="userEmail" class="email-input" placeholder="Your email (for receipt)">
+<button class="btn btn-premium" id="payBtn" data-amount="6" data-days="14">$6 — 14 days</button>
+<button class="btn btn-premium" id="payBtn2" data-amount="10" data-days="30" style="margin-top:5px;">$10 — 30 days</button>
+<p style="font-size:11px;color:#888;margin-top:8px;">Secured by Paystack. Auto key on success.</p>
 </div>
 
 <div style="text-align:center;margin-top:20px;">
@@ -67,8 +67,11 @@
 </div>
 </div>
 
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
-const API_URL = "https://ultimate-apii.kawunlere.workers.dev";
+const PAYSTACK_KEY = "pk_live_3dafba532f8d5a53f0f17a8482e453cb33185d1b";
+const API = "https://ultimate-apii.kawunlere.workers.dev";
+const CALLBACK = "https://ultimate-store-247.kawunlere.workers.dev/paystack-callback.html";
 const params = new URLSearchParams(window.location.search);
 const deviceId = params.get('device');
 
@@ -80,25 +83,32 @@ if (!deviceId || deviceId.length < 5) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('plans').style.display = 'block';
   document.getElementById('freeBtn').href = '8ad.html?device=' + encodeURIComponent(deviceId);
-  
-  // Check existing key
-  fetch(API_URL + '/api/verify-key', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ deviceId, key: 'check' })
-  })
-  .then(r => r.json())
-  .then(data => {});
-  
-  // Premium button
-  document.getElementById('premiumBtn').onclick = function() {
-    alert('Paystack integration coming soon. For now, use the admin command to generate premium keys.\\n\\nOr contact admin.');
-  };
-  
-  // Check key button
+
+  function pay(amount, days) {
+    const email = document.getElementById('userEmail').value;
+    if (!email || !email.includes('@')) { alert('Enter valid email'); return; }
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_KEY,
+      email: email,
+      amount: amount * 100,
+      currency: 'USD',
+      ref: 'mod_' + Date.now() + '_' + deviceId.slice(-6),
+      metadata: { deviceId: deviceId, days: days, custom_fields: [] },
+      callback: function(response) {
+        window.location.href = CALLBACK + '?reference=' + response.reference + '&device=' + encodeURIComponent(deviceId);
+      },
+      onClose: function() { alert('Payment cancelled'); }
+    });
+    handler.openIframe();
+  }
+
+  document.getElementById('payBtn').onclick = function() { pay(6, 14); };
+  document.getElementById('payBtn2').onclick = function() { pay(10, 30); };
+
   document.getElementById('checkBtn').onclick = function() {
     const k = prompt('Enter your key:');
     if (!k) return;
-    fetch(API_URL + '/api/verify-key', {
+    fetch(API + '/api/verify-key', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deviceId, key: k })
     })
