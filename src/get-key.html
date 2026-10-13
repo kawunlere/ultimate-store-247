@@ -16,9 +16,11 @@
 .btn:hover { background: #00ff41; color: #000; }
 .btn-free { background: #001a0d; }
 .btn-premium { background: linear-gradient(135deg, #ff5722, #ff9800); color: #fff; border-color: #ff5722; width: 100%; }
-.key-display { font-size: 18px; font-weight: bold; color: #00ff41; padding: 15px; background: #000; border: 1px solid #00ff41; border-radius: 4px; text-align: center; font-family: monospace; text-shadow: 0 0 8px #00ff41; word-break: break-all; margin: 10px 0; }
-.error { color: #f44336; padding: 10px; background: rgba(244,67,54,0.1); border-radius: 4px; }
+.btn-owner { background: linear-gradient(135deg, gold, #ff8c00); color: #000; border-color: gold; width: 100%; }
 input.email-input { width: 100%; padding: 10px; background: #000; color: #00ff41; border: 1px solid #00ff41; border-radius: 4px; font-family: monospace; margin: 8px 0; box-sizing: border-box; }
+.owner-box { background: rgba(255,215,0,0.1); border: 2px solid gold; border-radius: 8px; padding: 20px; text-align: center; box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+.owner-key { font-size: 18px; font-weight: bold; color: gold; padding: 15px; background: #000; border: 1px solid gold; border-radius: 4px; font-family: monospace; word-break: break-all; margin: 15px 0; text-shadow: 0 0 8px gold; }
+.hidden { display: none; }
 </style>
 </head>
 <body>
@@ -27,30 +29,43 @@ input.email-input { width: 100%; padding: 10px; background: #000; color: #00ff41
 <div class="floating-orb orb3"></div>
 <div class="matrix-rain" id="matrixRain"></div>
 <div id="adsBar" class="ads-bar"></div>
-<header class="topbar">
-<a href="/" class="logo">Ultimate Store 24/7</a>
-</header>
+<header class="topbar"><a href="/" class="logo">Ultimate Store 24/7</a></header>
 
 <div style="max-width:500px;margin:30px auto;padding:20px;">
 <h2 style="text-align:center;color:#00ff41;text-shadow:0 0 10px #00ff41;">Get Your Key</h2>
 
 <div id="loading" style="text-align:center;color:#00802b;padding:20px;">Loading...</div>
-<div id="error" class="error" style="display:none;"></div>
 
-<div id="plans" style="display:none;">
+<div id="ownerBox" class="hidden">
+<div class="owner-box">
+<h3 style="color:gold;text-shadow:0 0 10px gold;">👑 Owner Access</h3>
+<p style="color:#aaa;">Welcome back, boss! Your owner key:</p>
+<div id="ownerKeyDisplay" class="owner-key"></div>
+<p style="color:#888;font-size:12px;">Lifetime access. Already active in your mod.</p>
+</div>
+</div>
+
+<div id="plans" class="hidden">
 <div class="plan">
 <h3>FREE KEY</h3>
 <div class="price">FREE</div>
-<div class="desc">2 days access. Watch 8 short ads.</div>
-<a id="freeBtn" class="btn btn-free" style="display:block;text-align:center;">Watch 8 Ads & Get Free Key</a>
+<div class="desc">2 days. Watch 8 ads to unlock.</div>
+<a id="freeBtn" class="btn btn-free" style="display:block;text-align:center;">Watch 8 Ads</a>
 </div>
 
 <div class="plan">
 <h3>PREMIUM KEY</h3>
-<input type="email" id="userEmail" class="email-input" placeholder="Your email (for receipt)">
-<button class="btn btn-premium" id="payBtn" data-amount="6" data-days="14">$6 — 14 days</button>
-<button class="btn btn-premium" id="payBtn2" data-amount="10" data-days="30" style="margin-top:5px;">$10 — 30 days</button>
+<input type="email" id="userEmail" class="email-input" placeholder="Your email">
+<button class="btn btn-premium" id="payBtn1">₦1,500 — 14 days</button>
+<button class="btn btn-premium" id="payBtn2" style="margin-top:5px;">₦5,000 — 30 days</button>
 <p style="font-size:11px;color:#888;margin-top:8px;">Secured by Paystack. Auto key on success.</p>
+</div>
+
+<div class="plan">
+<h3>👑 OWNER ACCESS</h3>
+<div class="desc">Enter your master owner key for lifetime unlimited access.</div>
+<input type="password" id="ownerKeyInput" class="email-input" placeholder="Owner master key">
+<button class="btn btn-owner" id="ownerBtn">Activate Owner</button>
 </div>
 
 <div style="text-align:center;margin-top:20px;">
@@ -58,9 +73,9 @@ input.email-input { width: 100%; padding: 10px; background: #000; color: #00ff41
 </div>
 </div>
 
-<div id="keyBox" style="display:none;margin-top:20px;">
+<div id="keyBox" class="hidden" style="margin-top:20px;">
 <p style="color:#00ff41;text-align:center;">Your Key (copy it):</p>
-<div id="keyDisplay" class="key-display"></div>
+<div id="keyDisplay" style="font-size:18px;font-weight:bold;color:#00ff41;padding:15px;background:#000;border:1px solid #00ff41;border-radius:4px;text-align:center;font-family:monospace;word-break:break-all;"></div>
 <p id="keyExpires" style="color:#888;font-size:12px;text-align:center;margin-top:5px;"></p>
 <p id="keyType" style="color:#00ff41;font-size:12px;text-align:center;"></p>
 <button class="btn" onclick="window.location='/'" style="display:block;width:100%;">Back to Home</button>
@@ -71,29 +86,42 @@ input.email-input { width: 100%; padding: 10px; background: #000; color: #00ff41
 <script>
 const PAYSTACK_KEY = "pk_live_3dafba532f8d5a53f0f17a8482e453cb33185d1b";
 const API = "https://ultimate-apii.kawunlere.workers.dev";
+const OWNER_KEY = "OWNER-MASTER-2024-LIFETIME-kawunlere";
 const CALLBACK = "https://ultimate-store-247.kawunlere.workers.dev/paystack-callback.html";
 const params = new URLSearchParams(window.location.search);
 const deviceId = params.get('device');
 
 if (!deviceId || deviceId.length < 5) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('error').style.display = 'block';
-  document.getElementById('error').innerText = 'Invalid device ID. Open from mod menu.';
+  document.getElementById('loading').innerText = 'Invalid device ID. Open from mod menu.';
 } else {
   document.getElementById('loading').style.display = 'none';
-  document.getElementById('plans').style.display = 'block';
+  document.getElementById('plans').classList.remove('hidden');
   document.getElementById('freeBtn').href = '8ad.html?device=' + encodeURIComponent(deviceId);
 
+  // OWNER: auto-register device as owner when key matches
+  document.getElementById('ownerBtn').onclick = async function() {
+    const k = document.getElementById('ownerKeyInput').value;
+    if (k !== OWNER_KEY) { alert('Wrong owner key'); return; }
+    const res = await fetch(API + '/api/owner-check', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId, key: k })
+    });
+    const data = await res.json();
+    if (data.valid) {
+      document.getElementById('plans').classList.add('hidden');
+      document.getElementById('ownerBox').classList.remove('hidden');
+      document.getElementById('ownerKeyDisplay').innerText = OWNER_KEY;
+    }
+  };
+
+  // Paystack
   function pay(amount, days) {
     const email = document.getElementById('userEmail').value;
     if (!email || !email.includes('@')) { alert('Enter valid email'); return; }
     const handler = PaystackPop.setup({
-      key: PAYSTACK_KEY,
-      email: email,
-      amount: amount * 100,
-      currency: 'USD',
+      key: PAYSTACK_KEY, email: email, amount: amount * 100, currency: 'NGN',
       ref: 'mod_' + Date.now() + '_' + deviceId.slice(-6),
-      metadata: { deviceId: deviceId, days: days, custom_fields: [] },
+      metadata: { deviceId: deviceId, days: days },
       callback: function(response) {
         window.location.href = CALLBACK + '?reference=' + response.reference + '&device=' + encodeURIComponent(deviceId);
       },
@@ -101,10 +129,10 @@ if (!deviceId || deviceId.length < 5) {
     });
     handler.openIframe();
   }
+  document.getElementById('payBtn1').onclick = function() { pay(1500, 14); };
+  document.getElementById('payBtn2').onclick = function() { pay(5000, 30); };
 
-  document.getElementById('payBtn').onclick = function() { pay(6, 14); };
-  document.getElementById('payBtn2').onclick = function() { pay(10, 30); };
-
+  // Verify existing key
   document.getElementById('checkBtn').onclick = function() {
     const k = prompt('Enter your key:');
     if (!k) return;
@@ -115,19 +143,18 @@ if (!deviceId || deviceId.length < 5) {
     .then(r => r.json())
     .then(data => {
       if (data.valid) {
-        document.getElementById('plans').style.display = 'none';
-        document.getElementById('keyBox').style.display = 'block';
+        document.getElementById('plans').classList.add('hidden');
+        document.getElementById('keyBox').classList.remove('hidden');
         document.getElementById('keyDisplay').innerText = k;
         document.getElementById('keyExpires').innerText = 'Expires: ' + new Date(data.expires).toLocaleString();
         document.getElementById('keyType').innerText = 'Type: ' + data.type + ' (' + (data.daysLeft || '?') + ' days left)';
       } else {
-        alert('Invalid or expired key: ' + (data.message || ''));
+        alert('Invalid or expired: ' + (data.message || ''));
       }
     });
   };
 }
 
-// Matrix rain
 (function() {
   const rain = document.getElementById('matrixRain');
   if (!rain) return;
